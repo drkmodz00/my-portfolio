@@ -547,7 +547,7 @@ export default function Portfolio() {
         <section id="home" className="hero" style={{ maxWidth: "none", position: "relative" }}>
           <div className="hero-eyebrow fade-in">Creative Developer</div>
           <h1 className="hero-name fade-in delay-1">
-            Alexa Mae<em>Monteros</em>
+            Angel Mae<em>Morado</em>
           </h1>
           <p className="hero-title fade-in delay-2">Frontend Engineer · UI Designer · Full Stack Developer</p>
           <p className="hero-desc fade-in delay-3">
@@ -705,7 +705,7 @@ export default function Portfolio() {
             </div>
             <div className="contact-info">
               {[
-                { icon: "✦", label: "Email", value: "ammae@design.io" },
+                { icon: "✦", label: "Email", value: "amae@design.io" },
                 { icon: "◉", label: "Location", value: "Butuan City, Philippines" },
                 { icon: "◈", label: "Availability", value: "Open to projects" },
               ].map((item) => (
@@ -722,7 +722,7 @@ export default function Portfolio() {
         </section>
 
         <footer>
-          Designed & built with care · <span>Alexa Mae Monteros</span> · {new Date().getFullYear()}
+          Designed & built with care · <span>Angel Mae Morado</span> · {new Date().getFullYear()}
         </footer>
       </div>
     </>
