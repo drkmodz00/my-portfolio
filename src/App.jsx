@@ -3,10 +3,10 @@ import { useState, useEffect, useRef } from "react";
 const NAV_LINKS = ["Home", "About", "Skills", "Projects", "Contact"];
 
 const SKILLS = [
-  { name: "React", level: 50, icon: "⚛️" },
-  { name: "JavaScript", level: 50, icon: "🟡" },
-  { name: "TypeScript", level: 20, icon: "🔷" },
-  { name: "Node.js", level: 20, icon: "🟢" },
+  { name: "React", level: 100, icon: "⚛️" },
+  { name: "JavaScript", level: 100, icon: "🟡" },
+  { name: "TypeScript", level: 50, icon: "🔷" },
+  { name: "Node.js", level: 50, icon: "🟢" },
   { name: "CSS / Tailwind", level: 90, icon: "🎨" },
   { name: "UI/UX Design", level: 100, icon: "✦" },
 ];
@@ -44,6 +44,13 @@ const PROJECTS = [
     title: "DMEP Collection",
     desc: "A web-based shopping platform that enables customers to browse products, place orders, and manage purchases online with big sales for branded.",
     tags: ["Tailwind", "Django", "Supabase", "Javascript"],
+    color: "#e9d5ff",
+    accent: "#9333ea",
+  },
+  {
+    title: "Dreamscape Bookstore",
+    desc: "A modern UI/UX design for an online bookstore, featuring multiple book categories, intuitive navigation, and a seamless shopping experience designed to help readers discover and purchase books effortlessly.",
+    tags: ["UI/UX", "Figma"],
     color: "#e9d5ff",
     accent: "#9333ea",
   },
@@ -540,7 +547,7 @@ export default function Portfolio() {
         <section id="home" className="hero" style={{ maxWidth: "none", position: "relative" }}>
           <div className="hero-eyebrow fade-in">Creative Developer</div>
           <h1 className="hero-name fade-in delay-1">
-            Angel Mae<em>Morado</em>
+            Alexa Mae<em>Monteros</em>
           </h1>
           <p className="hero-title fade-in delay-2">Frontend Engineer · UI Designer · Full Stack Developer</p>
           <p className="hero-desc fade-in delay-3">
@@ -698,7 +705,7 @@ export default function Portfolio() {
             </div>
             <div className="contact-info">
               {[
-                { icon: "✦", label: "Email", value: "maemorado29@gmail.com" },
+                { icon: "✦", label: "Email", value: "ammae@design.io" },
                 { icon: "◉", label: "Location", value: "Butuan City, Philippines" },
                 { icon: "◈", label: "Availability", value: "Open to projects" },
               ].map((item) => (
@@ -715,7 +722,7 @@ export default function Portfolio() {
         </section>
 
         <footer>
-          Designed & built with care · <span>Angel Mae Morado</span> · {new Date().getFullYear()}
+          Designed & built with care · <span>Alexa Mae Monteros</span> · {new Date().getFullYear()}
         </footer>
       </div>
     </>
