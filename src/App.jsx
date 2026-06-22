@@ -1,10 +1,15 @@
 import { useState, useEffect, useRef } from "react";
+import emailjs from "@emailjs/browser";
+
+const EMAILJS_SERVICE_ID = "service_jgp1mj5";
+const EMAILJS_TEMPLATE_ID = "template_60hlm09";
+const EMAILJS_PUBLIC_KEY = "Xt5ZUdQVyBfjIS74F";
 
 const NAV_LINKS = ["Home", "About", "Skills", "Projects", "Contact"];
 
 const SKILLS = [
-  { name: "React", level: 100, icon: "⚛️" },
-  { name: "JavaScript", level: 100, icon: "🟡" },
+  { name: "React", level: 50, icon: "⚛️" },
+  { name: "JavaScript", level: 50, icon: "🟡" },
   { name: "TypeScript", level: 50, icon: "🔷" },
   { name: "Node.js", level: 50, icon: "🟢" },
   { name: "CSS / Tailwind", level: 90, icon: "🎨" },
@@ -13,32 +18,12 @@ const SKILLS = [
 
 const PROJECTS = [
   {
-    title: "To-Do List",
-    desc: "A simple full stack task management application that helps users organize, track, and complete daily activities efficiently.",
-    tags: ["React", "TypeScript/JavaScript", "Node.js", "Supabase", "Android Studio"],
-    color: "#c4b5fd",
-    accent: "#7c3aed",
-  },
-  {
     title: "Fintrackr",
     desc: "A personal finance management system that allows users to record expenses, monitor spending habits, and track their budget.",
     tags: ["Node.js", "React", "Supabase", "Deployed", "Tailwind", "Next.js"],
     color: "#a5b4fc",
     accent: "#4f46e5",
-  },
-  {
-    title: "Laboratory Management",
-    desc: "A monitoring system designed to track laboratory equipment, resources, and activities to improve efficiency and management.",
-    tags: ["Tailwind", "HTML", "Supabase", "Django"],
-    color: "#ddd6fe",
-    accent: "#6d28d9",
-  },
-  {
-    title: "Vyber",
-    desc: "An online platform of cars for browsing, viewing, and purchasing vehicles with interactive product displays and detailed specifications.",
-    tags: ["Three.js", "React", "Supabase", "Javascript", "MySql", "PHP", "API", "Laravel"],
-    color: "#e9d5ff",
-    accent: "#9333ea",
+    link: "https://fintrackr-mm7e.onrender.com",
   },
   {
     title: "DMEP Collection",
@@ -46,15 +31,8 @@ const PROJECTS = [
     tags: ["Tailwind", "Django", "Supabase", "Javascript"],
     color: "#e9d5ff",
     accent: "#9333ea",
+    link: "https://dmep.onrender.com/",
   },
-  {
-    title: "Dreamscape Bookstore",
-    desc: "A modern UI/UX design for an online bookstore, featuring multiple book categories, intuitive navigation, and a seamless shopping experience designed to help readers discover and purchase books effortlessly.",
-    tags: ["UI/UX", "Figma"],
-    color: "#e9d5ff",
-    accent: "#9333ea",
-  },
-
 ];
 
 const ORBS = [
@@ -172,10 +150,17 @@ const css = `
 
   /* HERO */
   .hero {
-    min-height: 100vh; display: flex; flex-direction: column;
-    align-items: center; justify-content: center; text-align: center;
-    padding: 8rem 5% 4rem;
+    min-height: 100vh;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    align-items: center;
+    gap: 4rem;
+    padding: 8rem 7% 4rem;
+    max-width: 1280px;
+    margin: 0 auto;
   }
+
+  .hero-content { text-align: left; }
 
   .hero-eyebrow {
     font-size: 0.75rem; letter-spacing: 0.24em; text-transform: uppercase;
@@ -183,13 +168,13 @@ const css = `
     display: flex; align-items: center; gap: 0.75rem;
   }
 
-  .hero-eyebrow::before, .hero-eyebrow::after {
+  .hero-eyebrow::before {
     content: ''; display: block; width: 36px; height: 0.5px; background: var(--lavender-400);
   }
 
   .hero-name {
     font-family: 'Cormorant Garamond', serif;
-    font-size: clamp(4rem, 9vw, 8.5rem);
+    font-size: clamp(3.2rem, 7vw, 6.5rem);
     font-weight: 300; line-height: 0.92;
     color: var(--text-primary); margin-bottom: 0.3rem; letter-spacing: -0.01em;
   }
@@ -200,7 +185,7 @@ const css = `
   }
 
   .hero-title {
-    font-size: clamp(0.85rem, 1.5vw, 1.05rem); letter-spacing: 0.18em;
+    font-size: clamp(0.75rem, 1.2vw, 0.9rem); letter-spacing: 0.18em;
     text-transform: uppercase; color: var(--text-secondary);
     font-weight: 300; margin: 1.6rem 0 2.4rem;
   }
@@ -210,7 +195,137 @@ const css = `
     color: var(--text-secondary); margin-bottom: 3rem;
   }
 
-  .hero-btns { display: flex; gap: 1rem; flex-wrap: wrap; justify-content: center; }
+  .hero-btns { display: flex; gap: 1rem; flex-wrap: wrap; }
+
+  /* PHOTO PLACEHOLDER */
+  .hero-photo-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+  }
+
+  .hero-photo-ring {
+    position: absolute;
+    inset: -18px;
+    border-radius: 50%;
+    border: 1px solid rgba(167,139,250,0.22);
+    animation: ringPulse 4s ease-in-out infinite;
+  }
+
+  .hero-photo-ring-2 {
+    position: absolute;
+    inset: -36px;
+    border-radius: 50%;
+    border: 1px solid rgba(167,139,250,0.1);
+    animation: ringPulse 4s ease-in-out infinite 1s;
+  }
+
+  @keyframes ringPulse {
+    0%, 100% { opacity: 0.5; transform: scale(1); }
+    50% { opacity: 1; transform: scale(1.015); }
+  }
+
+  .hero-photo-frame {
+    position: relative;
+    width: 340px;
+    height: 420px;
+    border-radius: 200px 200px 180px 180px;
+    overflow: hidden;
+    background: linear-gradient(160deg, rgba(167,139,250,0.14) 0%, rgba(109,40,217,0.18) 50%, rgba(59,7,100,0.28) 100%);
+    border: 1px solid rgba(167,139,250,0.28);
+    box-shadow:
+      0 40px 100px rgba(109,40,217,0.3),
+      0 0 0 1px rgba(167,139,250,0.1) inset,
+      inset 0 1px 0 rgba(255,255,255,0.1);
+    backdrop-filter: blur(10px);
+    flex-shrink: 0;
+  }
+
+  .hero-photo-inner {
+    width: 100%; height: 100%;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: flex-end;
+    padding-bottom: 2.5rem;
+    position: relative;
+  }
+
+  .photo-silhouette {
+    position: absolute;
+    bottom: 0; left: 50%;
+    transform: translateX(-50%);
+    width: 220px;
+    opacity: 0.18;
+  }
+
+  .photo-placeholder-icon {
+    width: 90px; height: 90px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, rgba(167,139,250,0.3), rgba(109,40,217,0.2));
+    border: 1.5px solid rgba(167,139,250,0.4);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 2.2rem;
+    margin-bottom: 1rem;
+    position: relative;
+    z-index: 1;
+  }
+
+  .photo-placeholder-text {
+    font-size: 0.72rem; letter-spacing: 0.18em; text-transform: uppercase;
+    color: var(--lavender-400); text-align: center;
+    position: relative; z-index: 1;
+    line-height: 1.6;
+  }
+
+  .photo-placeholder-hint {
+    font-size: 0.65rem; color: var(--text-muted);
+    letter-spacing: 0.1em; margin-top: 0.3rem;
+  }
+
+  .hero-photo-badge {
+    position: absolute;
+    bottom: -16px; right: -16px;
+    background: linear-gradient(135deg, rgba(167,139,250,0.25), rgba(109,40,217,0.2));
+    border: 1px solid rgba(167,139,250,0.35);
+    backdrop-filter: blur(20px);
+    border-radius: 16px;
+    padding: 0.9rem 1.3rem;
+    display: flex; align-items: center; gap: 0.7rem;
+    box-shadow: 0 8px 32px rgba(109,40,217,0.2);
+  }
+
+  .badge-dot {
+    width: 8px; height: 8px; border-radius: 50%;
+    background: #a3e635;
+    box-shadow: 0 0 8px rgba(163,230,53,0.6);
+    animation: dotPulse 2s ease-in-out infinite;
+  }
+
+  @keyframes dotPulse {
+    0%, 100% { box-shadow: 0 0 8px rgba(163,230,53,0.6); }
+    50% { box-shadow: 0 0 16px rgba(163,230,53,0.9); }
+  }
+
+  .badge-text {
+    font-size: 0.72rem; letter-spacing: 0.1em; text-transform: uppercase;
+    color: var(--lavender-200);
+  }
+
+  .hero-scroll {
+    display: flex; flex-direction: column; align-items: flex-start; gap: 0.5rem;
+    color: var(--text-muted); font-size: 0.7rem; letter-spacing: 0.2em; text-transform: uppercase;
+    margin-top: 3rem;
+  }
+
+  .scroll-line {
+    width: 1px; height: 48px; background: linear-gradient(to bottom, var(--lavender-400), transparent);
+    animation: scrollPulse 2s ease-in-out infinite;
+  }
+
+  @keyframes scrollPulse {
+    0%, 100% { opacity: 0.4; transform: scaleY(1); }
+    50% { opacity: 1; transform: scaleY(0.6); }
+  }
 
   .btn-primary {
     padding: 0.85rem 2.2rem; border-radius: 100px;
@@ -241,23 +356,6 @@ const css = `
   .btn-ghost:hover {
     border-color: rgba(255,255,255,0.28); color: var(--text-primary);
     transform: translateY(-2px);
-  }
-
-  .hero-scroll {
-    position: absolute; bottom: 2.5rem; left: 50%;
-    transform: translateX(-50%);
-    display: flex; flex-direction: column; align-items: center; gap: 0.5rem;
-    color: var(--text-muted); font-size: 0.7rem; letter-spacing: 0.2em; text-transform: uppercase;
-  }
-
-  .scroll-line {
-    width: 1px; height: 48px; background: linear-gradient(to bottom, var(--lavender-400), transparent);
-    animation: scrollPulse 2s ease-in-out infinite;
-  }
-
-  @keyframes scrollPulse {
-    0%, 100% { opacity: 0.4; transform: scaleY(1); }
-    50% { opacity: 1; transform: scaleY(0.6); }
   }
 
   /* SECTION */
@@ -300,7 +398,7 @@ const css = `
 
   /* ABOUT */
   .about-grid {
-    display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; align-items: center;
+    display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; align-items: start;
   }
 
   .about-text { padding: 0; }
@@ -311,18 +409,51 @@ const css = `
 
   .about-text p strong { color: var(--lavender-300); font-weight: 400; }
 
+  .about-right { display: flex; flex-direction: column; gap: 1.25rem; }
+
   .about-card {
-    padding: 2.8rem 2.4rem;
+    padding: 2.4rem 2.2rem;
   }
 
-  .about-stat { display: flex; flex-direction: column; gap: 0.25rem; margin-bottom: 2rem; }
-  .about-stat:last-child { margin-bottom: 0; }
+  .about-stat { display: flex; flex-direction: column; gap: 0.25rem; }
   .stat-num {
     font-family: 'Cormorant Garamond', serif; font-size: 3rem; font-weight: 300;
     color: var(--lavender-300); line-height: 1;
   }
   .stat-label { font-size: 0.8rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-muted); }
   .stat-divider { width: 100%; height: 0.5px; background: var(--glass-border); margin: 1.5rem 0; }
+
+  /* About photo small card */
+  .about-photo-card {
+    padding: 1.8rem 2.2rem;
+    display: flex; align-items: center; gap: 1.5rem;
+  }
+
+  .about-photo-thumb {
+    width: 72px; height: 88px;
+    border-radius: 50px;
+    flex-shrink: 0;
+    background: linear-gradient(160deg, rgba(167,139,250,0.2), rgba(109,40,217,0.25));
+    border: 1px solid rgba(167,139,250,0.3);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.6rem;
+    overflow: hidden;
+    position: relative;
+  }
+
+  .about-photo-info { display: flex; flex-direction: column; gap: 0.3rem; }
+  .about-photo-name {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.3rem; font-weight: 300; color: var(--text-primary);
+  }
+  .about-photo-role {
+    font-size: 0.72rem; letter-spacing: 0.12em; text-transform: uppercase;
+    color: var(--lavender-400);
+  }
+  .about-photo-location {
+    font-size: 0.8rem; color: var(--text-muted);
+    display: flex; align-items: center; gap: 0.4rem; margin-top: 0.2rem;
+  }
 
   /* SKILLS */
   .skills-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.25rem; }
@@ -351,6 +482,9 @@ const css = `
     padding: 2rem 2.2rem;
     position: relative; overflow: hidden;
     cursor: pointer;
+    display: block;
+    text-decoration: none;
+    color: inherit;
   }
 
   .project-card::before {
@@ -443,6 +577,19 @@ const css = `
     box-shadow: 0 12px 40px rgba(109,40,217,0.3);
   }
 
+  .form-submit:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+  }
+
+  .form-error {
+    font-size: 0.8rem;
+    color: #fca5a5;
+    margin-top: 0.8rem;
+    text-align: center;
+  }
+
   .contact-info { display: flex; flex-direction: column; gap: 1.5rem; padding-top: 0.5rem; }
 
   .contact-info-item {
@@ -478,19 +625,134 @@ const css = `
   .delay-3 { animation-delay: 0.45s; opacity: 0; }
   .delay-4 { animation-delay: 0.6s; opacity: 0; }
 
+  /* SCROLL REVEAL */
+  .reveal {
+    opacity: 0;
+    transform: translateY(36px);
+    transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1),
+                transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+    will-change: opacity, transform;
+  }
+
+  .reveal.reveal-visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .reveal-left { transform: translateX(-40px); }
+  .reveal-left.reveal-visible { transform: translateX(0); }
+
+  .reveal-right { transform: translateX(40px); }
+  .reveal-right.reveal-visible { transform: translateX(0); }
+
+  .reveal-scale { transform: scale(0.94); }
+  .reveal-scale.reveal-visible { transform: scale(1); }
+
+  @media (prefers-reduced-motion: reduce) {
+    .reveal, .reveal-left, .reveal-right, .reveal-scale {
+      opacity: 1 !important; transform: none !important; transition: none !important;
+    }
+    .orb { animation: none !important; }
+  }
+
+  .reveal-stagger-1 { transition-delay: 0.06s; }
+  .reveal-stagger-2 { transition-delay: 0.12s; }
+  .reveal-stagger-3 { transition-delay: 0.18s; }
+  .reveal-stagger-4 { transition-delay: 0.24s; }
+  .reveal-stagger-5 { transition-delay: 0.3s; }
+  .reveal-stagger-6 { transition-delay: 0.36s; }
+
+  .orb {
+    transition: transform 0.1s linear;
+  }
+
+  @media (max-width: 900px) {
+    .hero {
+      grid-template-columns: 1fr;
+      text-align: center;
+      padding: 7rem 5% 4rem;
+    }
+    .hero-content { order: 2; }
+    .hero-photo-wrapper { order: 1; }
+    .hero-eyebrow { justify-content: center; }
+    .hero-btns { justify-content: center; }
+    .hero-scroll { align-items: center; }
+    .hero-photo-frame { width: 240px; height: 300px; }
+  }
+
   @media (max-width: 768px) {
     .about-grid, .contact-inner { grid-template-columns: 1fr; }
     .skills-grid { grid-template-columns: repeat(2, 1fr); }
     .projects-grid { grid-template-columns: 1fr; }
     .nav-links { display: none; }
+    .about-right { flex-direction: row; flex-wrap: wrap; }
+    .about-right .glass-card { flex: 1 1 200px; }
   }
 `;
+
+function Reveal({ children, className = "", variant = "", as: Tag = "div", ...rest }) {
+  const ref = useRef(null);
+  const [visible, setVisible] = useState(false);
+
+  useEffect(() => {
+    const node = ref.current;
+    if (!node) return;
+    const obs = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setVisible(true);
+          obs.unobserve(node);
+        }
+      },
+      { threshold: 0.15, rootMargin: "0px 0px -8% 0px" }
+    );
+    obs.observe(node);
+    return () => obs.disconnect();
+  }, []);
+
+  const variantClass = variant ? `reveal-${variant}` : "";
+  return (
+    <Tag
+      ref={ref}
+      className={`reveal ${variantClass} ${visible ? "reveal-visible" : ""} ${className}`.trim()}
+      {...rest}
+    >
+      {children}
+    </Tag>
+  );
+}
+
+function useParallaxOrbs(count) {
+  const offsetsRef = useRef(Array(count).fill(0));
+  const [, forceTick] = useState(0);
+  const ticking = useRef(false);
+
+  useEffect(() => {
+    const onScroll = () => {
+      if (ticking.current) return;
+      ticking.current = true;
+      requestAnimationFrame(() => {
+        const y = window.scrollY;
+        offsetsRef.current = offsetsRef.current.map((_, i) => y * (0.04 + i * 0.015));
+        forceTick((t) => t + 1);
+        ticking.current = false;
+      });
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
+  return offsetsRef.current;
+}
 
 export default function Portfolio() {
   const [skillsVisible, setSkillsVisible] = useState(false);
   const skillsRef = useRef(null);
   const [formData, setFormData] = useState({ name: "", email: "", message: "" });
   const [sent, setSent] = useState(false);
+  const [sending, setSending] = useState(false);
+  const [error, setError] = useState("");
+  const orbOffsets = useParallaxOrbs(ORBS.length);
 
   useEffect(() => {
     const obs = new IntersectionObserver(
@@ -503,9 +765,32 @@ export default function Portfolio() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    setSent(true);
-    setTimeout(() => setSent(false), 3000);
-    setFormData({ name: "", email: "", message: "" });
+    setError("");
+    setSending(true);
+
+    emailjs
+      .send(
+        EMAILJS_SERVICE_ID,
+        EMAILJS_TEMPLATE_ID,
+        {
+          from_name: formData.name,
+          from_email: formData.email,
+          message: formData.message,
+        },
+        EMAILJS_PUBLIC_KEY
+      )
+      .then(() => {
+        setSent(true);
+        setFormData({ name: "", email: "", message: "" });
+        setTimeout(() => setSent(false), 3000);
+      })
+      .catch((err) => {
+        console.error("EmailJS error:", err);
+        setError("Something went wrong sending your message. Please try again.");
+      })
+      .finally(() => {
+        setSending(false);
+      });
   };
 
   return (
@@ -525,6 +810,7 @@ export default function Portfolio() {
             background: o.color,
             animationDelay: `${i * 3}s`,
             animationDuration: `${16 + i * 4}s`,
+            transform: `translateY(${-(orbOffsets[i] || 0)}px)`,
           }}
         />
       ))}
@@ -539,38 +825,79 @@ export default function Portfolio() {
             </li>
           ))}
         </ul>
-        <button className="nav-cta">Hire Me</button>
       </nav>
 
       <div className="page">
-        {/* HERO */}
-        <section id="home" className="hero" style={{ maxWidth: "none", position: "relative" }}>
-          <div className="hero-eyebrow fade-in">Creative Developer</div>
-          <h1 className="hero-name fade-in delay-1">
-            Angel Mae<em>Morado</em>
-          </h1>
-          <p className="hero-title fade-in delay-2">Frontend Engineer · UI Designer · Full Stack Developer</p>
-          <p className="hero-desc fade-in delay-3">
-            Crafting beautiful, performant digital experiences at the intersection of design and technology. As a Full-Stack Developer, UI Designer, and Frontend Engineer, I build intuitive interfaces and scalable web applications that deliver seamless user experiences.
-          </p>
-          <div className="hero-btns fade-in delay-4">
-            <button className="btn-primary" onClick={() => document.getElementById("projects").scrollIntoView({ behavior: "smooth" })}>
-              View Work
-            </button>
-            <button className="btn-ghost" onClick={() => document.getElementById("contact").scrollIntoView({ behavior: "smooth" })}>
-              Get in Touch
-            </button>
-          </div>
-          <div className="hero-scroll">
-            <div className="scroll-line" />
-            <span>Scroll</span>
+        {/* HERO — two-column with photo */}
+        <section id="home" style={{ maxWidth: "none", padding: 0 }}>
+          <div className="hero">
+            {/* Left: text */}
+            <div className="hero-content">
+              <div className="hero-eyebrow fade-in">Creative Developer</div>
+              <h1 className="hero-name fade-in delay-1">
+                Angel Mae<em>Morado</em>
+              </h1>
+              <p className="hero-title fade-in delay-2">Frontend Engineer · UI Designer · Full Stack Developer</p>
+              <p className="hero-desc fade-in delay-3">
+                Crafting beautiful, performant digital experiences at the intersection of design and technology. As a Full-Stack Developer, UI Designer, and Frontend Engineer, I build intuitive interfaces and scalable web applications that deliver seamless user experiences.
+              </p>
+              <div className="hero-btns fade-in delay-4">
+                <button className="btn-primary" onClick={() => document.getElementById("projects").scrollIntoView({ behavior: "smooth" })}>
+                  View Work
+                </button>
+                <button className="btn-ghost" onClick={() => document.getElementById("contact").scrollIntoView({ behavior: "smooth" })}>
+                  Get in Touch
+                </button>
+              </div>
+              <div className="hero-scroll fade-in delay-4">
+                <div className="scroll-line" />
+                <span>Scroll</span>
+              </div>
+            </div>
+
+            {/* Right: photo placeholder */}
+            <div className="hero-photo-wrapper fade-in delay-2">
+              <div className="hero-photo-ring" />
+              <div className="hero-photo-ring-2" />
+              <div className="hero-photo-frame">
+                {/* ─── Replace this div's contents with an <img> tag once you have your photo ─── */}
+                <img src="public/2.jpg" alt="Angel Mae Morado" style={{width:'100%',height:'99%',objectFit:'cover'}} />
+                <div className="hero-photo-inner">
+                  {/* Decorative gradient lines */}
+                  <svg style={{ position: "absolute", inset: 0, width: "100%", height: "100%", opacity: 0.12 }} viewBox="0 0 340 420" preserveAspectRatio="xMidYMid slice">
+                    <defs>
+                      <linearGradient id="lineGrad" x1="0" y1="0" x2="1" y2="1">
+                        <stop offset="0%" stopColor="#a78bfa" />
+                        <stop offset="100%" stopColor="#7c3aed" />
+                      </linearGradient>
+                    </defs>
+                    {[...Array(12)].map((_, i) => (
+                      <line key={i} x1={i * 30} y1="0" x2={i * 30 + 420} y2="420" stroke="url(#lineGrad)" strokeWidth="0.8" />
+                    ))}
+                    <circle cx="170" cy="160" r="88" fill="none" stroke="url(#lineGrad)" strokeWidth="1" />
+                    <circle cx="170" cy="160" r="60" fill="rgba(167,139,250,0.08)" />
+                  </svg>
+
+                  <div className="photo-placeholder-icon">👤</div>
+                  <div className="photo-placeholder-text">
+                    Your Photo Here
+                    <div className="photo-placeholder-hint">Replace with &lt;img&gt; tag</div>
+                  </div>
+                </div>
+              </div>
+              {/* Available badge */}
+              <div className="hero-photo-badge">
+                <div className="badge-dot" />
+                <span className="badge-text">Available for work</span>
+              </div>
+            </div>
           </div>
         </section>
 
         {/* ABOUT */}
         <section id="about">
           <div className="about-grid">
-            <div className="about-text">
+            <Reveal variant="left" className="about-text">
               <div className="section-label">About Me</div>
               <h2 className="section-title">
                 Design-led<em>engineering</em>
@@ -579,40 +906,56 @@ export default function Portfolio() {
                 I'm a frontend engineer with a deep love for <strong>visual craft and interaction design</strong>. I believe great software is felt before it's understood — every transition, every spacing decision, every typographic choice matters.
               </p>
               <p>
-                With 5+ years building products for startups and enterprises, I bring both the technical depth to architect scalable systems and the <strong>aesthetic sensitivity</strong> to make them delightful.
+                With 3 years building products for startups and enterprises, I bring both the technical depth to architect scalable systems and the <strong>aesthetic sensitivity</strong> to make them delightful.
               </p>
               <p>
                 Currently open to <strong>select freelance projects</strong> and full-time opportunities.
               </p>
-            </div>
-            <div className="glass-card about-card">
-              <div className="about-stat">
-                <span className="stat-num">5+</span>
-                <span className="stat-label">Years of experience</span>
-              </div>
-              <div className="stat-divider" />
-              <div className="about-stat">
-                <span className="stat-num">5</span>
-                <span className="stat-label">Projects</span>
-              </div>
-              <div className="stat-divider" />
-              {/* <div className="about-stat">
-                <span className="stat-num">12</span>
-                <span className="stat-label">Happy clients</span>
-              </div> */}
+            </Reveal>
+
+            <div className="about-right">
+              {/* Identity card */}
+              <Reveal variant="right" className="glass-card about-photo-card">
+                <div className="about-photo-thumb">👤</div>
+                <div className="about-photo-info">
+                  <div className="about-photo-name">Angel Mae Morado</div>
+                  <div className="about-photo-role">Full-Stack Developer</div>
+                  <div className="about-photo-location">
+                    <span style={{ fontSize: "0.7rem" }}>📍</span>
+                    Buenavista, Philippines
+                  </div>
+                </div>
+              </Reveal>
+
+              {/* Stats card */}
+              <Reveal variant="right" className="glass-card about-card" style={{ transitionDelay: "0.1s" }}>
+                <div className="about-stat">
+                  <span className="stat-num">3+</span>
+                  <span className="stat-label">Years of experience</span>
+                </div>
+                <div className="stat-divider" />
+                <div className="about-stat">
+                  <span className="stat-num">2</span>
+                  <span className="stat-label">Projects</span>
+                </div>
+              </Reveal>
             </div>
           </div>
         </section>
 
         {/* SKILLS */}
         <section id="skills" ref={skillsRef}>
-          <div className="section-label">Expertise</div>
-          <h2 className="section-title">
+          <Reveal className="section-label" as="div">Expertise</Reveal>
+          <Reveal as="h2" className="section-title">
             Core <em>skills</em>
-          </h2>
+          </Reveal>
           <div className="skills-grid">
             {SKILLS.map((s, i) => (
-              <div key={s.name} className="glass-card skill-item">
+              <Reveal
+                key={s.name}
+                variant="scale"
+                className={`glass-card skill-item reveal-stagger-${(i % 6) + 1}`}
+              >
                 <div className="skill-header">
                   <span className="skill-name">{s.name}</span>
                   <span className="skill-icon">{s.icon}</span>
@@ -629,22 +972,27 @@ export default function Portfolio() {
                   </div>
                   <span className="skill-pct">{s.level}%</span>
                 </div>
-              </div>
+              </Reveal>
             ))}
           </div>
         </section>
 
         {/* PROJECTS */}
         <section id="projects">
-          <div className="section-label">Work</div>
-          <h2 className="section-title">
+          <Reveal className="section-label" as="div">Work</Reveal>
+          <Reveal as="h2" className="section-title">
             Featured <em>projects</em>
-          </h2>
+          </Reveal>
           <div className="projects-grid">
             {PROJECTS.map((p, i) => (
-              <div
+              <Reveal
+                as="a"
                 key={p.title}
-                className="glass-card project-card"
+                href={p.link}
+                target="_blank"
+                rel="noopener noreferrer"
+                variant="scale"
+                className={`glass-card project-card reveal-stagger-${(i % 6) + 1}`}
                 style={{ "--project-color": p.color }}
               >
                 <div className="project-glow" style={{ background: p.color }} />
@@ -657,19 +1005,19 @@ export default function Portfolio() {
                   ))}
                 </div>
                 <span className="project-arrow">↗</span>
-              </div>
+              </Reveal>
             ))}
           </div>
         </section>
 
         {/* CONTACT */}
         <section id="contact">
-          <div className="section-label">Contact</div>
-          <h2 className="section-title">
+          <Reveal className="section-label" as="div">Contact</Reveal>
+          <Reveal as="h2" className="section-title">
             Let's <em>connect</em>
-          </h2>
+          </Reveal>
           <div className="contact-inner">
-            <div className="glass-card contact-form-card">
+            <Reveal variant="left" className="glass-card contact-form-card">
               <form onSubmit={handleSubmit}>
                 <div className="form-group">
                   <label className="form-label">Name</label>
@@ -698,32 +1046,37 @@ export default function Portfolio() {
                     required
                   />
                 </div>
-                <button type="submit" className="form-submit">
-                  {sent ? "Message Sent ✦" : "Send Message"}
+                <button type="submit" className="form-submit" disabled={sending}>
+                  {sending ? "Sending..." : sent ? "Message Sent ✦" : "Send Message"}
                 </button>
+                {error && <div className="form-error">{error}</div>}
               </form>
-            </div>
+            </Reveal>
             <div className="contact-info">
               {[
-                { icon: "✦", label: "Email", value: "amae@design.io" },
-                { icon: "◉", label: "Location", value: "Butuan City, Philippines" },
+                { icon: "✦", label: "Email", value: "maemorado29@gmail.com" },
+                { icon: "◉", label: "Location", value: "Alubihid, Buenavista, Philippines" },
                 { icon: "◈", label: "Availability", value: "Open to projects" },
-              ].map((item) => (
-                <div key={item.label} className="glass-card contact-info-item">
+              ].map((item, i) => (
+                <Reveal
+                  key={item.label}
+                  variant="right"
+                  className={`glass-card contact-info-item reveal-stagger-${i + 1}`}
+                >
                   <div className="contact-icon">{item.icon}</div>
                   <div>
                     <div className="contact-item-label">{item.label}</div>
                     <div className="contact-item-value">{item.value}</div>
                   </div>
-                </div>
+                </Reveal>
               ))}
             </div>
           </div>
         </section>
 
-        <footer>
+        <Reveal as="footer">
           Designed & built with care · <span>Angel Mae Morado</span> · {new Date().getFullYear()}
-        </footer>
+        </Reveal>
       </div>
     </>
   );
