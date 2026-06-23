@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import emailjs from "@emailjs/browser";
 
 const EMAILJS_SERVICE_ID = "service_jgp1mj5";
-const EMAILJS_TEMPLATE_ID = "template_60hlm09";
+const EMAILJS_TEMPLATE_ID = "template_axd7elg";
 const EMAILJS_PUBLIC_KEY = "Xt5ZUdQVyBfjIS74F";
 
 const NAV_LINKS = ["Home", "About", "Skills", "Projects", "Contact"];
